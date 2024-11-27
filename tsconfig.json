@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-firebase-tools": ["./src/index"]
+      "react-native-firebase-tools": ["./package/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
