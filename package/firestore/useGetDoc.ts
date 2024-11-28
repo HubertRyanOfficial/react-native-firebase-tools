@@ -21,6 +21,7 @@ function useGetDoc<
   const fnExecuted = useRef<boolean>(false);
   const unsubscribe = useRef<any>(null);
 
+  // * A request can be made to just get a document without real-time updates.
   const request = useCallback(async () => {
     if (!loading) setLoading(true);
     if (error) setError(false);
@@ -47,6 +48,7 @@ function useGetDoc<
     }
   }, [ref, options, data, error, loading]);
 
+  // * A request Snapshot you can read and receive real-time data and a unsubscribe function will be deliveried.
   const requestSnapshopt = useCallback(() => {
     if (!loading) setLoading(true);
     if (error) setError(false);
