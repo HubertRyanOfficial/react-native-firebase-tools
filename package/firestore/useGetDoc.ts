@@ -8,14 +8,19 @@ import type {
   FirestoreOptions,
 } from './types';
 
-function useGetDoc<T extends FirebaseFirestoreTypes.DocumentData>(
+function useGetDoc<
+  T extends FirebaseFirestoreTypes.DocumentData,
+  H extends FirebaseFirestoreTypes.DocumentData = never,
+>(
   collection: string,
   doc: string,
-  options?: FirestoreOptions
-): FirestoreReturn<T> {
+  options?: FirestoreOptions<T, H>
+): FirestoreReturn<T | H> {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [data, setData] = useState<(T & FirestoreDataResponse) | null>(null);
+  const [data, setData] = useState<
+    (T & FirestoreDataResponse) | (H & FirestoreDataResponse) | null
+  >(null);
 
   // * fnExecuted: A non-state value using reference to avoid mutiple calls when autoRequest is true
   const fnExecuted = useRef<boolean>(false);
@@ -30,10 +35,15 @@ function useGetDoc<T extends FirebaseFirestoreTypes.DocumentData>(
       const getRawData =
         (await docRef.get()) as FirebaseFirestoreTypes.DocumentSnapshot<T>;
 
-      const rawData = {
+      let rawData = {
         id: getRawData.id,
         ...getRawData.data(),
       } as T & FirestoreDataResponse;
+
+      if (options && !!options.formatterFn) {
+        const { formatterFn } = options;
+        rawData = formatterFn(rawData) as any;
+      }
 
       setData(rawData);
     } catch (e) {
@@ -41,7 +51,7 @@ function useGetDoc<T extends FirebaseFirestoreTypes.DocumentData>(
     } finally {
       setLoading(false);
     }
-  }, [collection, doc, data, error, loading]);
+  }, [collection, doc, options, data, error, loading]);
 
   useEffect(() => {
     if (options && options.autoRequest && !fnExecuted.current) {

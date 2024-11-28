@@ -28,7 +28,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {loading && !data && <Text>Loading</Text>}
-      {!loading && data && <Text>{data.username}</Text>}
+      {!loading && data && <Text>{JSON.stringify(data, null, 2)}</Text>}
     </View>
   );
 }

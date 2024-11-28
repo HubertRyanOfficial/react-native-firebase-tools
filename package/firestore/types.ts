@@ -9,8 +9,8 @@ interface FirestoreReturn<T> {
   data: (T & FirestoreDataResponse) | null;
 }
 
-interface FirestoreOptions {
-  formatterFn?: (data: any) => void;
+interface FirestoreOptions<T, H> {
+  formatterFn?: (data: T & FirestoreDataResponse) => T | H;
   autoRequest?: boolean;
 }
 
