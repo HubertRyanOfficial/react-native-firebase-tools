@@ -6,6 +6,7 @@ import type {
   FirestoreReturn,
   FirestoreOptions,
 } from './types';
+import { NO_REF_MESSAGE } from './message';
 
 function useGetDoc<
   T extends FirebaseFirestoreTypes.DocumentData,
@@ -26,8 +27,7 @@ function useGetDoc<
     if (data) setData(null);
 
     try {
-      if (!ref)
-        throw 'RNFirebaseTools needs the reference to request in server. Create your reference using firestore module from @react-native-firebase/firestore';
+      if (!ref) throw NO_REF_MESSAGE;
 
       const getRawData = await ref.get();
 
