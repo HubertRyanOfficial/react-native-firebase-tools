@@ -31,9 +31,10 @@ function useGetDoc<
     if (data) setData(null);
 
     try {
-      const docRef = firestore().collection(collection).doc(doc);
-      const getRawData =
-        (await docRef.get()) as FirebaseFirestoreTypes.DocumentSnapshot<T>;
+      const docRef = firestore()
+        .collection<FirebaseFirestoreTypes.DocumentSnapshot<T>>(collection)
+        .doc(doc);
+      const getRawData = await docRef.get();
 
       let rawData = {
         id: getRawData.id,
