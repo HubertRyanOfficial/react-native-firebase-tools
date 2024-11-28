@@ -6,7 +6,7 @@ interface FirestoreReturn<T> {
   request: () => Promise<void>;
   requestSnapshopt: () => void;
   loading: boolean;
-  error: boolean;
+  error: Error | undefined;
   data: (T & FirestoreDataResponse) | null;
   unsubscribe: any;
 }

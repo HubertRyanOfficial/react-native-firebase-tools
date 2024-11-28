@@ -12,7 +12,7 @@ function useGetDoc<
   H extends FirebaseFirestoreTypes.DocumentData = never,
 >(ref: any, options?: FirestoreOptions<T, H>): FirestoreReturn<T | H> {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<Error | undefined>();
   const [data, setData] = useState<
     (T & FirestoreDataResponse) | (H & FirestoreDataResponse) | null
   >(null);
@@ -24,7 +24,7 @@ function useGetDoc<
   // * A request can be made to just get a document without real-time updates.
   const request = useCallback(async () => {
     if (!loading) setLoading(true);
-    if (error) setError(false);
+    if (error) setError(undefined);
     if (data) setData(null);
 
     try {
@@ -42,7 +42,7 @@ function useGetDoc<
 
       setData(rawData);
     } catch (e) {
-      setError(true);
+      setError(undefined);
     } finally {
       setLoading(false);
     }
@@ -51,16 +51,16 @@ function useGetDoc<
   // * A request Snapshot you can read and receive real-time data and a unsubscribe function will be deliveried.
   const requestSnapshopt = useCallback(() => {
     if (!loading) setLoading(true);
-    if (error) setError(false);
+    if (error) setError(undefined);
     if (data) setData(null);
 
     const currentUnsubscribe = ref.onSnapshot({
       complete: () => {
         setLoading(false);
       },
-      error: () => {
+      error: (e: Error) => {
         setData(null);
-        setError(true);
+        setError(e);
       },
       next: (snap: FirebaseFirestoreTypes.QueryDocumentSnapshot<T>) => {
         setLoading(false);
