@@ -98,7 +98,6 @@ function useGetDoc<
       options.autoRequest &&
       !fnExecuted.current
     ) {
-      console.log('Calling snapshot');
       fnExecuted.current = true;
       requestSnapshopt();
     }
