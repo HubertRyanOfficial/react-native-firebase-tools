@@ -25,6 +25,9 @@ export default function App() {
     snapshop: true,
   });
 
+  console.log('Data: ', data);
+  console.log('Loading: ', loading);
+
   return (
     <View style={styles.container}>
       {loading && !data && <Text>Loading</Text>}

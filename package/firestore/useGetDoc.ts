@@ -52,43 +52,37 @@ function useGetDoc<
     if (error) setError(false);
     if (data) setData(null);
 
-    try {
-      const currentUnsubscribe = ref.onSnapshot(
-        (snap: FirebaseFirestoreTypes.QueryDocumentSnapshot<T>) => {
-          let rawData = {
-            id: snap.id,
-            ...snap.data(),
-          } as T & FirestoreDataResponse;
+    const currentUnsubscribe = ref.onSnapshot({
+      complete: () => {
+        setLoading(false);
+      },
+      error: () => {
+        setData(null);
+        setError(true);
+      },
+      next: (snap: FirebaseFirestoreTypes.QueryDocumentSnapshot<T>) => {
+        setLoading(false);
 
-          console.log('Data: ', rawData);
+        let rawData = {
+          id: snap.id,
+          ...snap.data(),
+        } as T & FirestoreDataResponse;
 
-          if (options && !!options.formatterFn) {
-            const { formatterFn } = options;
-            rawData = formatterFn(rawData) as any;
-          }
+        console.log('Data: ', rawData);
 
-          setData(rawData);
-        },
-        () => {
-          setData(null);
-          setError(true);
-        },
-        () => {
-          setLoading(false);
+        if (options && !!options.formatterFn) {
+          const { formatterFn } = options;
+          rawData = formatterFn(rawData) as any;
         }
-      );
 
-      unsubscribe.current = currentUnsubscribe;
-    } catch (e) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+        setData(rawData);
+      },
+    });
+
+    unsubscribe.current = currentUnsubscribe;
   }, [ref, options, data, error, loading]);
 
   useEffect(() => {
-    let unsubscribeState: any;
-
     if (
       options &&
       options.autoRequest &&
@@ -97,21 +91,29 @@ function useGetDoc<
     ) {
       fnExecuted.current = true;
       request();
-    } else if (options && options.snapshop) {
-      if (options.snapshop && options.autoRequest && !fnExecuted.current) {
-        fnExecuted.current = true;
-        requestSnapshopt();
-      }
-      if (unsubscribe.current) {
-        console.log('Hello');
-        unsubscribeState = unsubscribe.current;
-      }
+    } else if (
+      options &&
+      options.snapshop &&
+      options.snapshop &&
+      options.autoRequest &&
+      !fnExecuted.current
+    ) {
+      console.log('Calling snapshot');
+      fnExecuted.current = true;
+      requestSnapshopt();
+    }
+  }, [options, fnExecuted, request, requestSnapshopt]);
+
+  useEffect(() => {
+    let unsubscribeState: any;
+    if (unsubscribe.current) {
+      unsubscribeState = unsubscribe.current;
     }
 
     return () => unsubscribeState && unsubscribeState();
-  }, [options, fnExecuted, request, requestSnapshopt, unsubscribe]);
+  }, [unsubscribe]);
 
-  return { request, requestSnapshopt, loading, error, data };
+  return { request, requestSnapshopt, loading, error, data, unsubscribe };
 }
 
 export { useGetDoc };

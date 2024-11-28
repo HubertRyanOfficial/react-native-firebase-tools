@@ -8,6 +8,7 @@ interface FirestoreReturn<T> {
   loading: boolean;
   error: boolean;
   data: (T & FirestoreDataResponse) | null;
+  unsubscribe: any;
 }
 
 interface FirestoreOptions<T, H> {
