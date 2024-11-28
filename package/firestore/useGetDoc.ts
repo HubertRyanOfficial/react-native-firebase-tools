@@ -70,8 +70,6 @@ function useGetDoc<
           ...snap.data(),
         } as T & FirestoreDataResponse;
 
-        console.log('Data: ', rawData);
-
         if (options && !!options.formatterFn) {
           const { formatterFn } = options;
           rawData = formatterFn(rawData) as any;
