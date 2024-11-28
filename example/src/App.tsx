@@ -22,6 +22,7 @@ const postRef = firestore().collection('posts').doc('00HjLZBHOA7QgfmtbyTe');
 export default function App() {
   const { data, loading } = useGetDoc<PostType>(postRef, {
     autoRequest: true,
+    snapshop: true,
   });
 
   return (
