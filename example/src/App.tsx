@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 import { useGetDoc } from 'react-native-firebase-tools';
 interface PostType {
   id: string;
@@ -16,14 +17,12 @@ interface PostType {
   profileURL: string;
 }
 
+const postRef = firestore().collection('posts').doc('00HjLZBHOA7QgfmtbyTe');
+
 export default function App() {
-  const { data, loading } = useGetDoc<PostType>(
-    'posts',
-    '00HjLZBHOA7QgfmtbyTe',
-    {
-      autoRequest: true,
-    }
-  );
+  const { data, loading } = useGetDoc<PostType>(postRef, {
+    autoRequest: true,
+  });
 
   return (
     <View style={styles.container}>

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import firestore from '@react-native-firebase/firestore';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore/';
 import type {
   FirestoreDataResponse,
@@ -11,11 +10,7 @@ import type {
 function useGetDoc<
   T extends FirebaseFirestoreTypes.DocumentData,
   H extends FirebaseFirestoreTypes.DocumentData = never,
->(
-  collection: string,
-  doc: string,
-  options?: FirestoreOptions<T, H>
-): FirestoreReturn<T | H> {
+>(ref: any, options?: FirestoreOptions<T, H>): FirestoreReturn<T | H> {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [data, setData] = useState<
@@ -31,10 +26,10 @@ function useGetDoc<
     if (data) setData(null);
 
     try {
-      const docRef = firestore()
-        .collection<FirebaseFirestoreTypes.DocumentSnapshot<T>>(collection)
-        .doc(doc);
-      const getRawData = await docRef.get();
+      if (!ref)
+        throw 'RNFirebaseTools needs the reference to request in server. Create your reference using firestore module from @react-native-firebase/firestore';
+
+      const getRawData = await ref.get();
 
       let rawData = {
         id: getRawData.id,
@@ -52,7 +47,7 @@ function useGetDoc<
     } finally {
       setLoading(false);
     }
-  }, [collection, doc, options, data, error, loading]);
+  }, [ref, options, data, error, loading]);
 
   useEffect(() => {
     if (options && options.autoRequest && !fnExecuted.current) {
