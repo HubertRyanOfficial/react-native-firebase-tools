@@ -13,7 +13,7 @@ export default function App() {
     { username: string; id: string }
   >(postRef, {
     autoRequest: true,
-    snapshop: true,
+    snapshot: true,
     formatterFn,
   });
 

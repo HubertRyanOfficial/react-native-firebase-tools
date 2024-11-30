@@ -4,7 +4,7 @@ interface FirestoreDataResponse {
 
 interface FirestoreReturn<T> {
   request: () => Promise<void>;
-  requestSnapshopt: () => void;
+  requestSnapshot: () => void;
   loading: boolean;
   error: Error | undefined;
   data: (T & FirestoreDataResponse) | null;
@@ -14,7 +14,7 @@ interface FirestoreReturn<T> {
 interface FirestoreOptions<T, H> {
   formatterFn?: (data: T & FirestoreDataResponse) => T | H;
   autoRequest?: boolean;
-  snapshop?: boolean;
+  snapshot?: boolean;
 }
 
 export type { FirestoreOptions, FirestoreReturn, FirestoreDataResponse };

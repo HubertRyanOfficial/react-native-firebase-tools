@@ -49,7 +49,7 @@ function useGetDoc<
   }, [ref, options, data, error, loading]);
 
   // * A request Snapshot you can read and receive real-time data and a unsubscribe function will be deliveried.
-  const requestSnapshopt = useCallback(() => {
+  const requestSnapshot = useCallback(() => {
     if (!loading) setLoading(true);
     if (error) setError(undefined);
     if (data) setData(null);
@@ -86,22 +86,21 @@ function useGetDoc<
     if (
       options &&
       options.autoRequest &&
-      !options.snapshop &&
+      !options.snapshot &&
       !fnExecuted.current
     ) {
       fnExecuted.current = true;
       request();
     } else if (
       options &&
-      options.snapshop &&
-      options.snapshop &&
+      options.snapshot &&
       options.autoRequest &&
       !fnExecuted.current
     ) {
       fnExecuted.current = true;
-      requestSnapshopt();
+      requestSnapshot();
     }
-  }, [options, fnExecuted, request, requestSnapshopt]);
+  }, [options, fnExecuted, request, requestSnapshot]);
 
   useEffect(() => {
     let unsubscribeState: any;
@@ -112,7 +111,7 @@ function useGetDoc<
     return () => unsubscribeState && unsubscribeState();
   }, [unsubscribe]);
 
-  return { request, requestSnapshopt, loading, error, data, unsubscribe };
+  return { request, requestSnapshot, loading, error, data, unsubscribe };
 }
 
 export { useGetDoc };
