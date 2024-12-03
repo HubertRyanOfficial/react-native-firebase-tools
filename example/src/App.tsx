@@ -1,14 +1,17 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { useGetDoc } from 'react-native-firebase-tools';
+import { useGetDocs } from 'react-native-firebase-tools';
 
 import { formatterFn } from './services/posts/schema';
 import type { PostType } from './services/posts/types';
 
-const postRef = firestore().collection('posts').doc('00HjLZBHOA7QgfmtbyTe');
+const postRef = firestore()
+  .collection('posts')
+  .orderBy('createdAt', 'asc')
+  .limit(3);
 
 export default function App() {
-  const { data, loading } = useGetDoc<
+  const { data, loading, request, end } = useGetDocs<
     PostType,
     { username: string; id: string }
   >(postRef, {
@@ -19,8 +22,15 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {loading && !data && <Text>Loading</Text>}
-      {!loading && data && <Text>{JSON.stringify(data, null, 2)}</Text>}
+      {loading && data.length === 0 && <Text>Loading</Text>}
+      {!loading && data.length > 0 && (
+        <Text>{JSON.stringify(data, null, 2)}</Text>
+      )}
+      <Button
+        disabled={end}
+        title={!end ? 'Next' : 'Ops, the list is over'}
+        onPress={request}
+      />
     </View>
   );
 }

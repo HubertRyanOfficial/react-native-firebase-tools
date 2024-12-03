@@ -3,19 +3,22 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import type {
   FirestoreDataResponse,
-  FirestoreReturn,
-  FirestoreOptions,
+  FirestoreDocReturn,
+  FirestoreDocOptions,
 } from './types';
 
 function useGetDoc<
   T extends FirebaseFirestoreTypes.DocumentData,
   H extends FirebaseFirestoreTypes.DocumentData = never,
->(ref: any, options?: FirestoreOptions<T, H>): FirestoreReturn<T | H> {
+>(
+  ref: FirebaseFirestoreTypes.DocumentReference,
+  options?: FirestoreDocOptions<T, H>
+): FirestoreDocReturn<T | H> {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>();
-  const [data, setData] = useState<
-    (T & FirestoreDataResponse) | (H & FirestoreDataResponse) | null
-  >(null);
+  const [data, setData] = useState<((T | H) & FirestoreDataResponse) | null>(
+    null
+  );
 
   // * fnExecuted: A non-state value using reference to avoid mutiple calls when autoRequest is true
   const fnExecuted = useRef<boolean>(false);
@@ -62,7 +65,7 @@ function useGetDoc<
         setData(null);
         setError(e);
       },
-      next: (snap: FirebaseFirestoreTypes.QueryDocumentSnapshot<T>) => {
+      next: (snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
         setLoading(false);
 
         let rawData = {
