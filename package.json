@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase-tools",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A library with many tools to help you using firebase on React Native Firebase (RN)",
   "source": "./package/index.tsx",
   "main": "./lib/commonjs/index.js",
