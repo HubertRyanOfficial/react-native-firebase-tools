@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import {} from '@react-native-firebase/firestore';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import type {
   FirestoreDataResponse,
@@ -12,7 +13,9 @@ function useGetDocs<
   T extends FirebaseFirestoreTypes.DocumentData,
   H extends FirebaseFirestoreTypes.DocumentData = never,
 >(
-  ref: FirebaseFirestoreTypes.CollectionReference,
+  ref:
+    | FirebaseFirestoreTypes.CollectionReference
+    | FirebaseFirestoreTypes.Query,
   options?: FirestoreDocsOptions<T, H>
 ): FirestoreDocsReturn<T | H> {
   const [loading, setLoading] = useState(true);
@@ -44,12 +47,9 @@ function useGetDocs<
       }
 
       // * Creating the reference with the pagination options and verifying if the list  ended
-      if (options && options.pagination && !end) {
-        const refWithOptions = ref.limit(options.pagination.limite);
+      if (options && options.pagination) {
         getRawData = await (
-          !lastDocument
-            ? refWithOptions
-            : refWithOptions.startAfter(lastDocument)
+          !lastDocument ? ref : ref.startAfter(lastDocument)
         ).get();
       } else {
         getRawData = await ref.get();
@@ -71,7 +71,7 @@ function useGetDocs<
       if (
         options &&
         options.pagination &&
-        (getRawData.empty || getRawData.docs.length < options.pagination.limite)
+        (getRawData.empty || getRawData.docs.length < 3)
       ) {
         setEnd(true);
       }

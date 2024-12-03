@@ -34,7 +34,6 @@ interface FirestoreDocsOptions<T, H> {
   autoRequest?: boolean;
   snapshot?: boolean;
   pagination?: {
-    limite: number;
     documentGrouping?: boolean;
   };
 }
