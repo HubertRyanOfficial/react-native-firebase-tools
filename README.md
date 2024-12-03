@@ -36,6 +36,19 @@ This library offers developers useful features such as automatic handling of loa
 
 > Of course, if you're using react native firebase tools, you need to install react-native-firebase firsly to use that. Make sure you followed the [installation steps here](https://github.com/invertase/react-native-firebase) for the packages your application needs.
 
+## Supported modules
+
+Now with **React Native Firebase Tools**, we can use the **firestore module** to specific documents and collections. 🤹
+
+### Firestore
+
+- **useGetDoc:** Get specific documents in a collection or subcollection.
+- **(NEW) useGetDocs:** Get documents between collections and it may be possible to get all documents, with pagination included and much more
+
+### Storage
+
+- **useUpload:** Upload files with data such as upload progress value ​​already included, automatic download URL generation and more. **(✳️ IN_PROGRESS)**
+
 ## Installation
 
 ```sh
@@ -932,19 +945,6 @@ export default function ViewPost({ params }) {
 }
 ...
 ```
-
-## Supported modules
-
-So far with **React Native Firebase Tools**, we can only use the **firestore module** with specific documents. But I'm already working on being able to get **collections** with multiple documents using `useGetDoc` for specific documents and `useGetDocs` for document collections. For now you just `useGetDoc` 🤹
-
-### Firestore
-
-- **useGetDoc:** Get specific documents in a collection or subcollection.
-- **(NEW) useGetDocs:** Get documents between collections and it may be possible to get all documents, with pagination included and much more
-
-### Storage
-
-- **useUpload:** Upload files with data such as upload progress values ​​already included, automatic download URL generation and more. (✳️ **IN_PROGRESS**)
 
 ## Contributing
 
