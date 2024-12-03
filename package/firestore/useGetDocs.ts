@@ -55,10 +55,12 @@ function useGetDocs<
         getRawData = await ref.get();
       }
 
-      let rawData = getRawData.docs.map((currentDoc) => ({
-        id: currentDoc.id,
-        ...currentDoc.data(),
-      })) as (T & FirestoreDataResponse)[];
+      let rawData = getRawData.docs.map(
+        (currentDoc: FirebaseFirestoreTypes.QueryDocumentSnapshot) => ({
+          id: currentDoc.id,
+          ...currentDoc.data(),
+        })
+      ) as (T & FirestoreDataResponse)[];
 
       if (options && options.pagination && !getRawData.empty) {
         setLastDocument(
@@ -111,10 +113,12 @@ function useGetDocs<
       next: (snap: FirebaseFirestoreTypes.QuerySnapshot) => {
         setLoading(false);
 
-        let rawData = snap.docs.map((currentDoc) => ({
-          id: currentDoc.id,
-          ...currentDoc.data(),
-        })) as (T & FirestoreDataResponse)[];
+        let rawData = snap.docs.map(
+          (currentDoc: FirebaseFirestoreTypes.QueryDocumentSnapshot) => ({
+            id: currentDoc.id,
+            ...currentDoc.data(),
+          })
+        ) as (T & FirestoreDataResponse)[];
 
         if (options && !!options.formatterFn) {
           const { formatterFn } = options;
