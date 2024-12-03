@@ -13,7 +13,7 @@ export default function App() {
     { username: string; id: string }
   >(postRef, {
     autoRequest: true,
-    snapshot: false,
+    snapshot: true,
     formatterFn,
     pagination: {
       limite: 3,
@@ -23,8 +23,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {loading && !data && <Text>Loading</Text>}
-      {!loading && data && <Text>{JSON.stringify(data, null, 2)}</Text>}
+      {loading && data.length === 0 && <Text>Loading</Text>}
+      {!loading && data.length > 0 && (
+        <Text>{JSON.stringify(data, null, 2)}</Text>
+      )}
       <Button title="Next" onPress={request} />
     </View>
   );

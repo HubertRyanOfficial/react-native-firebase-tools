@@ -86,8 +86,8 @@ function useGetDocs<
           ? [...data, ...rawData]
           : rawData
       );
-    } catch (e) {
-      setError(undefined);
+    } catch (e: any) {
+      setError(e);
     } finally {
       setLoading(false);
     }
