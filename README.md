@@ -40,7 +40,13 @@ This library offers developers useful features such as automatic handling of loa
 
 ```sh
 npm install react-native-firebase-tools
+
+# Using expo:
+npx expo install react-native-firebase-tools
+
 ```
+
+If you're using expo and want to use RNFirebase and RNFirebaseTools you need to follow [additional steps](https://rnfirebase.io/#expo).
 
 ## Usage
 
@@ -260,7 +266,194 @@ function PostComponent() {
 
 ```
 
-### Formatters
+## Collections
+
+New version **0.1.3** or **higher**, now it is possible to get documents from collections using Firesotre with many cool properties that facilitate our implementation with **pagination**, **snapshot** and **list grouping**. 💡
+
+To be able to query collections you need to first import **useGetDocs** instead of **useGetDoc**.
+
+> useGetDoc is for specific document and useGetDocs is for collections
+
+You can get the list of comments this way:
+
+```ts
+...
+import firestore from '@react-native-firebase/firestore';
+
+import { useGetDocs } from 'react-native-firebase-tools';
+
+const postRef = firestore().collection('posts');
+
+export default function App() {
+  const { data, loading } = useGetDocs(postRef, {
+    autoRequest: true,
+  });
+```
+
+The same **options** you have in useGetDoc, you will have with useGetDocs, however we have some additional ones within useGetDocs such as pagination.
+
+### Pagination with collections
+
+The goal of React Native Firebase tools is to deliver as many ready-made tools as possible that can facilitate the implementation of features that would take a little longer using Firebase, and one of them is pagination.
+
+<img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
+
+By **pagination** within a collection of documents you can:
+
+1. Use the same resources and assemble your document collection reference using RNFirebase itself, but being able to enable pagination by simply changing a property.
+2. Whether or not to group the data that may appear at each page change.
+
+See how simple it is to add pagination to the comments collection with RNFirebaseTools:
+
+```ts
+...
+import firestore from '@react-native-firebase/firestore';
+
+import { useGetDocs } from 'react-native-firebase-tools';
+
+const postRef = firestore().collection('posts').limit(6);
+
+export default function App() {
+  const { data, loading, request } = useGetDocs(postRef, {
+    autoRequest: true,
+    pagination: true
+  });
+
+
+```
+
+Is it not simple? You don't need to handle startAfter or startAt. It's just _GO_! 🤹
+
+Now a simple way to be able to advance to each page is to call the same **request** function for the next page, RNFirebaseTools already stores the previous value to be able to page between documents.
+
+<img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
+
+**You know what's good?** It also returns when the list is at the **_end_** of the pagination with an end property ✅.
+
+Like that way:
+
+```ts
+...
+import firestore from '@react-native-firebase/firestore';
+
+import { useGetDocs } from 'react-native-firebase-tools';
+
+const postRef = firestore().collection('posts').limit(6);
+
+export default function App() {
+  const { data, loading, end, request } = useGetDocs(postRef, {
+    autoRequest: true,
+    pagination: true
+  });
+
+  return (
+    <View style={styles.container}>
+      {loading && <Text>Loading</Text>}
+      {!loading && data.map(post => (
+        <View key={post.id}>
+          <Text>{post.username}</Text>
+          <Image src={{post.photoURL}}>
+        </View>
+      ))
+      <Button
+        disabled={end}
+        title={!end ? 'Next' : 'Ops, the list is over'}
+        onPress={request}
+      />
+    </View>
+  );
+}
+```
+
+> Important to mention: pagination is based on the **limit** function that is used in its reference as the _postRef_ above to be able to identify that it has reached the end.
+
+<img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
+
+Você poderá obviamente criar suas referencias da forma que desejar e do mesmo jeito que o firebase suporta, isso não te limita, como por exemplo utilizar orderBy com a referencia:
+
+```ts
+...
+import firestore from '@react-native-firebase/firestore';
+
+import { useGetDocs } from 'react-native-firebase-tools';
+
+// A reference with orderBy and limit functions to get desc based on creation date
+const postRef = firestore()
+  .collection('posts')
+  .orderBy('createdAt', 'desc')
+  .limit(6);
+
+export default function App() {
+  const { data, loading, end, request } = useGetDocs(postRef, {
+    autoRequest: true,
+    pagination: true
+  });
+
+  ...
+}
+```
+
+### Pagination and document grouping
+
+One way to improve our pagination is to be able to **group** all the data on each page that is passed or not. This is good for applications that need to have a feed so that they can use the scroll and have the posts above return. By default, _grouping_ is disabled and is based on the limit function if it exists.
+
+Simply by deactivating group documentation, it will replace what was there before and show the new ones, like this:
+
+```ts
+...
+import firestore from '@react-native-firebase/firestore';
+
+import { useGetDocs } from 'react-native-firebase-tools';
+
+// A reference with orderBy and limit functions to get desc based on creation date
+const postRef = firestore()
+  .collection('posts')
+  .orderBy('createdAt', 'desc')
+  .limit(6);
+
+export default function App() {
+  const { data, loading, end, request } = useGetDocs(postRef, {
+    autoRequest: true,
+    pagination: {
+      documentGrouping: false
+    }
+  });
+
+  ...
+}
+```
+
+The above example is very useful when we create a table with a different pagination model by number. 🧩
+
+<img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
+
+If you are creating a **feed** or somewhere you want to actually create a list on each page passed you can leave this option as true like the example below:
+
+```ts
+...
+import firestore from '@react-native-firebase/firestore';
+
+import { useGetDocs } from 'react-native-firebase-tools';
+
+// A reference with orderBy and limit functions to get desc based on creation date
+const postRef = firestore()
+  .collection('posts')
+  .orderBy('createdAt', 'desc')
+  .limit(6);
+
+export default function App() {
+  const { data, loading, end, request } = useGetDocs(postRef, {
+    autoRequest: true,
+    pagination: {
+      documentGrouping: true
+    }
+  });
+
+  ...
+}
+```
+
+## Formatters
 
 As you know, when data is returned in Firebase, we can get the data with the **.data()** function. There may be several situations where we need to format the data by adding more data to feed our layout, or change behaviors, for example:
 
@@ -402,6 +595,63 @@ export function formatterFn(data) {
 }
 ```
 
+### Formatting collections
+
+In the same way that we can format specific documents, we can format using **useGetDocs** to be able to specify how we want to treat the documents in our collection front, however instead of RNFirebaseTools returning us a document, it returns us an array of them, see below:
+
+```ts
+
+...
+
+import { useStore } from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
+import { useGetDocs } from 'react-native-firebase-tools';
+
+
+// Document reference to the posts
+const postRef = firestore().collection('posts')
+
+function PostList() {
+
+  // Assuming we have all the post ids inside a reducer with Redux.
+  const likedPosts = useStore(store => store.userReducer.likedPosts || []);
+
+  const { data, loading } = useGetDocs(postRef, {
+    autoRequest: true,
+    formatterFn: (data) => {
+
+      const posts = data.map(post => {
+        const isLiked = likedPosts.find(post => post.id === data.id);
+
+        return {
+          ...post,
+          isLiked: isLiked ? true : false
+        }
+      })
+
+      return posts;
+    }
+  });
+
+  return (
+    <View style={styles.container}>
+      {loading && <Text>Loading</Text>}
+      {!loading && data.map(post => (
+        <View key={post.id}>
+          <Text>{post.username}</Text>
+          <Image src={{post.photoURL}}>
+          <HearIcon color={post.isLiked ? 'red' : 'light-gray'}>
+        </View>
+      ))
+    </View>
+  );
+}
+...
+
+```
+
+As I said above it is always good to move our formatters to another file using the folder structure: `services/{entity}/schema.ts` _(Just a tip)_.
+
 ## Typescript
 
 Do you think I didn't think about our types 😸? With **TypeScript** it works very simply with react-native-firebase-tools being able to type all data returns.
@@ -532,7 +782,50 @@ export default function ViewPost({ params }) {
 ...
 ```
 
-## Freedom with doc references
+### Formatters with collection types
+
+There is nothing different than above, however using **useGetDocs** to get documents from a collection, you do not need to determine a typing like an array, like a group of objects.
+
+RNFirebase Tools already knows that it is an array that comes from the **useGetDocs** method, so just repeat the process.😇
+
+**Wrong way ❌**
+
+```ts
+...
+  import type { PostType, PostFormatterType } from '../services/posts/types'
+
+  const postsRef = firestore().collection('posts').limit(12);
+
+  export default function PostList() {
+    const { data } = useGetDocs<PostType[], PostFormatterType[]>(postsRef, {
+      pagination: {
+        documentGrouping: true,
+      }
+    });
+
+    ...
+  }
+  ...
+```
+
+**Correct way ✅**
+
+```ts
+...
+  const postsRef = firestore().collection('posts').limit(12);
+
+  export default function PostList() {
+    const { data } = useGetDocs<PostType, PostFormatterType>(postsRef, {
+      pagination: {
+        documentGrouping: true,
+      }
+    });
+    ...
+  }
+  ...
+```
+
+## Freedom with references
 
 I developed React Native Firebase Tools with the intention of having as much freedom as possible, just like we have with the main module 🕹️. So with that, we can use any doc reference in any way we want and apply it as the first parameter of the **useGetDoc** function.
 
