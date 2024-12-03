@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {} from '@react-native-firebase/firestore';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import type {
   FirestoreDataResponse,
@@ -8,6 +7,7 @@ import type {
   FirestoreDocsOptions,
 } from './types';
 import { NO_SUPPORT_PAGINATION_REALTIME } from './message';
+import { getRefProperties } from '../utils/getFirestoreRefProperties';
 
 function useGetDocs<
   T extends FirebaseFirestoreTypes.DocumentData,
@@ -68,12 +68,15 @@ function useGetDocs<
         );
       }
 
-      if (
-        options &&
-        options.pagination &&
-        (getRawData.empty || getRawData.docs.length < 3)
-      ) {
-        setEnd(true);
+      if (options && options.pagination) {
+        const limitByRef = getRefProperties(ref, 'limit') as number | undefined;
+
+        if (
+          (limitByRef && getRawData.docs.length < limitByRef) ||
+          getRawData.empty
+        ) {
+          setEnd(true);
+        }
       }
 
       if (options && !!options.formatterFn) {

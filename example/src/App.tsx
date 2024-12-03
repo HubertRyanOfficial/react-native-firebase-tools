@@ -8,10 +8,10 @@ import type { PostType } from './services/posts/types';
 const postRef = firestore()
   .collection('posts')
   .orderBy('createdAt', 'asc')
-  .limit(3);
+  .limit(6);
 
 export default function App() {
-  const { data, loading, request } = useGetDocs<
+  const { data, loading, request, end } = useGetDocs<
     PostType,
     { username: string; id: string }
   >(postRef, {
@@ -28,7 +28,11 @@ export default function App() {
       {!loading && data.length > 0 && (
         <Text>{JSON.stringify(data, null, 2)}</Text>
       )}
-      <Button title="Next" onPress={request} />
+      <Button
+        disabled={end}
+        title={!end ? 'Next' : 'Ops, the list is over'}
+        onPress={request}
+      />
     </View>
   );
 }
