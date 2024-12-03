@@ -8,7 +8,7 @@ import type { PostType } from './services/posts/types';
 const postRef = firestore()
   .collection('posts')
   .orderBy('createdAt', 'asc')
-  .limit(6);
+  .limit(3);
 
 export default function App() {
   const { data, loading, request, end } = useGetDocs<
@@ -16,10 +16,8 @@ export default function App() {
     { username: string; id: string }
   >(postRef, {
     autoRequest: true,
+    snapshot: true,
     formatterFn,
-    pagination: {
-      documentGrouping: false,
-    },
   });
 
   return (

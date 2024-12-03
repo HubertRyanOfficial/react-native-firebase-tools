@@ -29,13 +29,17 @@ interface FirestoreDocsReturn<T extends FirebaseFirestoreTypes.DocumentData> {
   lastDocument: FirebaseFirestoreTypes.QueryDocumentSnapshot<T> | null;
 }
 
+type Pagination =
+  | boolean
+  | {
+      documentGrouping?: boolean;
+    };
+
 interface FirestoreDocsOptions<T, H> {
   formatterFn?: (data: (T & FirestoreDataResponse)[]) => T[] | H[];
   autoRequest?: boolean;
   snapshot?: boolean;
-  pagination?: {
-    documentGrouping?: boolean;
-  };
+  pagination?: Pagination;
 }
 
 export type {
@@ -44,4 +48,5 @@ export type {
   FirestoreDataResponse,
   FirestoreDocsReturn,
   FirestoreDocsOptions,
+  Pagination,
 };

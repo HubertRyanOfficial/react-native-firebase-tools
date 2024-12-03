@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import type {
@@ -30,11 +30,25 @@ function useGetDocs<
   const fnExecuted = useRef<boolean>(false);
   const unsubscribe = useRef<any>(null);
 
-  // * A request can be made to just get a document without real-time updates.
+  const hasPagination = useMemo(() => {
+    if (
+      options &&
+      ((typeof options?.pagination !== 'undefined' &&
+        typeof options?.pagination === 'boolean' &&
+        options?.pagination === true) ||
+        typeof options?.pagination === 'object')
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [options]);
+
+  // * A request can be made to just get the documents without real-time updates.
   const request = useCallback(async () => {
     if (!loading) setLoading(true);
     if (error) setError(undefined);
-    if ((data && !lastDocument) || (data && options && !options.pagination))
+    if ((data && !lastDocument) || (data && options && !hasPagination))
       setData([]);
 
     try {
@@ -47,7 +61,7 @@ function useGetDocs<
       }
 
       // * Creating the reference with the pagination options and verifying if the list  ended
-      if (options && options.pagination) {
+      if (hasPagination) {
         getRawData = await (
           !lastDocument ? ref : ref.startAfter(lastDocument)
         ).get();
@@ -62,13 +76,13 @@ function useGetDocs<
         })
       ) as (T & FirestoreDataResponse)[];
 
-      if (options && options.pagination && !getRawData.empty) {
+      if (hasPagination && !getRawData.empty) {
         setLastDocument(
           getRawData.docs[0] as FirebaseFirestoreTypes.QueryDocumentSnapshot<T>
         );
       }
 
-      if (options && options.pagination) {
+      if (hasPagination) {
         const limitByRef = getRefProperties(ref, 'limit') as number | undefined;
 
         if (
@@ -85,7 +99,9 @@ function useGetDocs<
       }
 
       setData(
-        options && options.pagination && options.pagination.documentGrouping
+        hasPagination &&
+          typeof options?.pagination === 'object' &&
+          options.pagination.documentGrouping
           ? [...data, ...rawData]
           : rawData
       );
@@ -94,7 +110,7 @@ function useGetDocs<
     } finally {
       setLoading(false);
     }
-  }, [ref, options, data, error, loading, lastDocument, end]);
+  }, [ref, options, data, error, loading, lastDocument, end, hasPagination]);
 
   // * A request Snapshot you can read and receive real-time data and a unsubscribe function will be deliveried.
   const requestSnapshot = useCallback(() => {
@@ -102,8 +118,7 @@ function useGetDocs<
     if (error) setError(undefined);
     if (data) setData([]);
 
-    if (options && options.pagination)
-      throw new Error(NO_SUPPORT_PAGINATION_REALTIME);
+    if (hasPagination) throw new Error(NO_SUPPORT_PAGINATION_REALTIME);
 
     const currentUnsubscribe = ref.onSnapshot({
       complete: () => {
@@ -133,7 +148,7 @@ function useGetDocs<
     });
 
     unsubscribe.current = currentUnsubscribe;
-  }, [ref, options, data, error, loading]);
+  }, [ref, options, data, error, loading, hasPagination]);
 
   useEffect(() => {
     if (
