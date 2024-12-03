@@ -34,8 +34,6 @@ This library offers developers useful features such as automatic handling of loa
 
 <img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
 
-> Of course, if you're using react native firebase tools, you need to install react-native-firebase firsly to use that. Make sure you followed the [installation steps here](https://github.com/invertase/react-native-firebase) for the packages your application needs.
-
 ## Supported modules
 
 Now with **React Native Firebase Tools**, we can use the **firestore module** to specific documents and collections. 🤹
@@ -59,7 +57,9 @@ npx expo install react-native-firebase-tools
 
 ```
 
-If you're using expo and want to use RNFirebase and RNFirebaseTools you need to follow [additional steps](https://rnfirebase.io/#expo).
+If you're using react native firebase tools, you need to install react-native-firebase firsly to use that. Make sure you followed the [installation steps here](https://github.com/invertase/react-native-firebase) for the packages your application needs.
+
+If you're using Expo and want to use RNFirebase and RNFirebaseTools you need to follow [additional steps](https://rnfirebase.io/#expo).
 
 ## Usage
 
