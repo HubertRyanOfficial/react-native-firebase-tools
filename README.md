@@ -41,7 +41,7 @@ Now with **React Native Firebase Tools**, we can use the **firestore module** to
 ### Firestore
 
 - **useGetDoc:** Get specific documents in a collection or subcollection.
-- **(NEW) useGetDocs:** Get documents between collections and it may be possible to get all documents, with pagination included and much more
+- **useGetDocs:** Get documents between collections and it may be possible to get all documents, pagination included and much more
 
 ### Storage
 
