@@ -1,19 +1,20 @@
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-interface FirestoreDataResponse {
+
+type FirestoreDataResponse<T> = {
   id: string;
-}
+} & T;
 
 interface FirestoreDocReturn<T extends FirebaseFirestoreTypes.DocumentData> {
   request: () => Promise<void>;
   requestSnapshot: () => void;
   loading: boolean;
   error: Error | undefined;
-  data: (T & FirestoreDataResponse) | null;
+  data: FirestoreDataResponse<T> | null;
   unsubscribe: any;
 }
 
 interface FirestoreDocOptions<T, H> {
-  formatterFn?: (data: T & FirestoreDataResponse) => T | H;
+  formatterFn?: (data: FirestoreDataResponse<T>) => T | H;
   autoRequest?: boolean;
   snapshot?: boolean;
 }
@@ -23,7 +24,7 @@ interface FirestoreDocsReturn<T extends FirebaseFirestoreTypes.DocumentData> {
   requestSnapshot: () => void;
   loading: boolean;
   error: Error | undefined;
-  data: (T & FirestoreDataResponse)[];
+  data: FirestoreDataResponse<T>[];
   unsubscribe: any;
   end: boolean;
   lastDocument: FirebaseFirestoreTypes.QueryDocumentSnapshot<T> | null;
@@ -36,7 +37,7 @@ type Pagination =
     };
 
 interface FirestoreDocsOptions<T, H> {
-  formatterFn?: (data: (T & FirestoreDataResponse)[]) => T[] | H[];
+  formatterFn?: (data: FirestoreDataResponse<T>[]) => T[] | H[];
   autoRequest?: boolean;
   snapshot?: boolean;
   pagination?: Pagination;

@@ -21,7 +21,7 @@ function useGetDocs<
 ): FirestoreDocsReturn<T | H> {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>();
-  const [data, setData] = useState<((T | H) & FirestoreDataResponse)[]>([]);
+  const [data, setData] = useState<FirestoreDataResponse<T | H>[]>([]);
 
   const [lastDocument, setLastDocument] =
     useState<FirebaseFirestoreTypes.QueryDocumentSnapshot<T> | null>(null);
@@ -78,7 +78,7 @@ function useGetDocs<
           id: currentDoc.id,
           ...currentDoc.data(),
         })
-      ) as (T & FirestoreDataResponse)[];
+      ) as FirestoreDataResponse<T>[];
 
       if (hasPagination && !getRawData.empty) {
         setLastDocument(
@@ -139,7 +139,7 @@ function useGetDocs<
             id: currentDoc.id,
             ...currentDoc.data(),
           })
-        ) as (T & FirestoreDataResponse)[];
+        ) as FirestoreDataResponse<T>[];
 
         if (options && !!options.formatterFn) {
           const { formatterFn } = options;

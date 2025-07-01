@@ -16,9 +16,7 @@ function useGetDoc<
 ): FirestoreDocReturn<T | H> {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>();
-  const [data, setData] = useState<((T | H) & FirestoreDataResponse) | null>(
-    null
-  );
+  const [data, setData] = useState<FirestoreDataResponse<T | H> | null>(null);
 
   // * fnExecuted: A non-state value using reference to avoid mutiple calls when autoRequest is true
   const fnExecuted = useRef<boolean>(false);
@@ -36,7 +34,7 @@ function useGetDoc<
       let rawData = {
         id: getRawData.id,
         ...getRawData.data(),
-      } as T & FirestoreDataResponse;
+      } as FirestoreDataResponse<T>;
 
       if (options && !!options.formatterFn) {
         const { formatterFn } = options;
@@ -71,7 +69,7 @@ function useGetDoc<
         let rawData = {
           id: snap.id,
           ...snap.data(),
-        } as T & FirestoreDataResponse;
+        } as FirestoreDataResponse<T>;
 
         if (options && !!options.formatterFn) {
           const { formatterFn } = options;
