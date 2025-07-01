@@ -16,7 +16,6 @@ export default function App() {
     { username: string; id: string }
   >(postRef, {
     autoRequest: true,
-    snapshot: true,
     formatterFn,
   });
 

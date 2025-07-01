@@ -6,8 +6,9 @@ import type {
   FirestoreDocsReturn,
   FirestoreDocsOptions,
 } from './types';
-import { NO_SUPPORT_PAGINATION_REALTIME } from './message';
+
 import { getRefProperties } from '../utils/getFirestoreRefProperties';
+import { NO_SUPPORT_PAGINATION_REALTIME } from './message';
 
 function useGetDocs<
   T extends FirebaseFirestoreTypes.DocumentData,
@@ -48,7 +49,10 @@ function useGetDocs<
   const request = useCallback(async () => {
     if (!loading) setLoading(true);
     if (error) setError(undefined);
-    if ((data && !lastDocument) || (data && options && !hasPagination))
+    if (
+      (data && data.length > 0 && !lastDocument) ||
+      (data && data.length > 0 && options && !hasPagination)
+    )
       setData([]);
 
     try {
@@ -116,7 +120,7 @@ function useGetDocs<
   const requestSnapshot = useCallback(() => {
     if (!loading) setLoading(true);
     if (error) setError(undefined);
-    if (data) setData([]);
+    if (data && data.length > 0) setData([]);
 
     if (hasPagination) throw new Error(NO_SUPPORT_PAGINATION_REALTIME);
 
@@ -127,10 +131,9 @@ function useGetDocs<
       error: (e: Error) => {
         setData([]);
         setError(e);
+        setLoading(false);
       },
       next: (snap: FirebaseFirestoreTypes.QuerySnapshot) => {
-        setLoading(false);
-
         let rawData = snap.docs.map(
           (currentDoc: FirebaseFirestoreTypes.QueryDocumentSnapshot) => ({
             id: currentDoc.id,
@@ -143,6 +146,7 @@ function useGetDocs<
           rawData = formatterFn(rawData) as any;
         }
 
+        setLoading(false);
         setData(rawData);
       },
     });
