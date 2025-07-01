@@ -14,7 +14,7 @@ interface FirestoreDocReturn<T extends FirebaseFirestoreTypes.DocumentData> {
 }
 
 interface FirestoreDocOptions<T, H> {
-  formatterFn?: (data: FirestoreDataResponse<T>) => T | H;
+  normalizer?: (data: FirestoreDataResponse<T>) => T | H;
   autoRequest?: boolean;
   snapshot?: boolean;
 }
@@ -37,7 +37,7 @@ type Pagination =
     };
 
 interface FirestoreDocsOptions<T, H> {
-  formatterFn?: (data: FirestoreDataResponse<T>[]) => T[] | H[];
+  normalizer?: (data: FirestoreDataResponse<T>[]) => T[] | H[];
   autoRequest?: boolean;
   snapshot?: boolean;
   pagination?: Pagination;

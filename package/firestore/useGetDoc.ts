@@ -36,9 +36,9 @@ function useGetDoc<
         ...getRawData.data(),
       } as FirestoreDataResponse<T>;
 
-      if (options && !!options.formatterFn) {
-        const { formatterFn } = options;
-        rawData = formatterFn(rawData) as any;
+      if (options && !!options.normalizer) {
+        const { normalizer } = options;
+        rawData = normalizer(rawData) as any;
       }
 
       setData(rawData);
@@ -71,9 +71,9 @@ function useGetDoc<
           ...snap.data(),
         } as FirestoreDataResponse<T>;
 
-        if (options && !!options.formatterFn) {
-          const { formatterFn } = options;
-          rawData = formatterFn(rawData) as any;
+        if (options && !!options.normalizer) {
+          const { normalizer } = options;
+          rawData = normalizer(rawData) as any;
         }
 
         setData(rawData);

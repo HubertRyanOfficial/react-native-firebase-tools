@@ -1,5 +1,4 @@
 export interface PostType {
-  id: string;
   audioId?: string;
   audioURL: string;
   createdAt: number;

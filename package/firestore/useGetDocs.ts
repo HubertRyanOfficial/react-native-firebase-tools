@@ -97,9 +97,9 @@ function useGetDocs<
         }
       }
 
-      if (options && !!options.formatterFn) {
-        const { formatterFn } = options;
-        rawData = formatterFn(rawData) as any;
+      if (options && !!options.normalizer) {
+        const { normalizer } = options;
+        rawData = normalizer(rawData) as any;
       }
 
       setData(
@@ -141,9 +141,9 @@ function useGetDocs<
           })
         ) as FirestoreDataResponse<T>[];
 
-        if (options && !!options.formatterFn) {
-          const { formatterFn } = options;
-          rawData = formatterFn(rawData) as any;
+        if (options && !!options.normalizer) {
+          const { normalizer } = options;
+          rawData = normalizer(rawData) as any;
         }
 
         setLoading(false);

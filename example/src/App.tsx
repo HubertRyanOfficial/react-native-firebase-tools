@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { useGetDocs } from 'react-native-firebase-tools';
 
-import { formatterFn } from './services/posts/schema';
+import { normalizer } from './services/posts/schema';
 import type { PostType } from './services/posts/types';
 
 const postRef = firestore()
@@ -16,7 +16,7 @@ export default function App() {
     { username: string; id: string }
   >(postRef, {
     autoRequest: true,
-    formatterFn,
+    normalizer,
   });
 
   return (
