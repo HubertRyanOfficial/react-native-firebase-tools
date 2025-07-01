@@ -17,9 +17,9 @@ This library offers developers useful features such as automatic handling of loa
 
 ## Features
 
-- 🍿 **Data Formatter**
+- 🍿 **Data Normalizing**
   - Okay. It was a big problem with default firestore response. We needed to destructure all data to prepare to our way and how our front-end needed, for example if a post was liked we need to send a new property to the components call like along with the data returned, different how it was received our document. Now you can create a fomatter function and treat as you want.
-  - With formatter you have more control how the data will be accept and treated on our components or routes.
+  - With normalizer you have more control how the data will be accept and treated on our components or routes.
 - 🕐 **Loading management**
   - Now you no longer need to create multiple loadings to wait for the request, with rn-firebase-tools you already have a loading state among other properties after making the request in a document.
 - 🚀 **Auto Request**
@@ -382,7 +382,7 @@ export default function App() {
 
 <img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
 
-Você poderá obviamente criar suas referencias da forma que desejar e do mesmo jeito que o firebase suporta, isso não te limita, como por exemplo utilizar orderBy com a referencia:
+You can obviously create your references however you want and in the same way that Firebase supports, this does not limit you, such as using orderBy with the reference:
 
 ```ts
 ...
@@ -466,7 +466,7 @@ export default function App() {
 }
 ```
 
-## Formatters
+## Normalizer
 
 As you know, when data is returned in Firebase, we can get the data with the **.data()** function. There may be several situations where we need to format the data by adding more data to feed our layout, or change behaviors, for example:
 
@@ -476,7 +476,7 @@ As you know, when data is returned in Firebase, we can get the data with the **.
 
 <img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
 
-There are several examples where formatters can be used. Let's take a simple example with the like reaction example itself.
+There are several examples where normalizer can be used. Let's take a simple example with the like reaction example itself.
 
 With this basic example we can say that the data that comes from the document post does not tell us whether it was liked or not. This means that we need to get it from somewhere in order to verify this information. Obviously this is a fictitious case, but most of the time another call is also made in the backend to this. 🫡
 
@@ -501,7 +501,7 @@ function PostComponent() {
 
   const { data } = useGetDoc(postRef, {
     autoRequest: true,
-    formatterFn: (data) => {
+    normalizer: (data) => {
 
       const isLiked = likedPosts.find(post => post.id === data.id);
 
@@ -536,13 +536,13 @@ function PostComponent() {
 
 ```
 
-As you can see, there are endless possibilities with the **formatter** function. With it, we can also avoid all the verbose code when creating functions and functions to simply adapt to our front-end using the mobile-first strategy.
+As you can see, there are endless possibilities with the **normalizer** function. With it, we can also avoid all the verbose code when creating functions and functions to simply adapt to our front-end using the mobile-first strategy.
 
-With the **Formatter**, you can easily enter a very positive experience with mobile first and initial states. 🙌
+With the **Normalizer**, you can easily enter a very positive experience with mobile first and initial states. 🙌
 
 <img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
 
-If you need a **complex** formatter function, I recommend create a separated file and we'll have a good organization in the project. Below I show where the files are and how import that, Of course, we can also reuse it in other requests:
+If you need a **complex** normalizer function, I recommend create a separated file and we'll have a good organization in the project. Below I show where the files are and how import that, Of course, we can also reuse it in other requests:
 
 ```ts
 // * src/components/Post
@@ -551,7 +551,7 @@ If you need a **complex** formatter function, I recommend create a separated fil
 import firestore from '@react-native-firebase/firestore';
 import { useGetDoc } from 'react-native-firebase-tools';
 
-import { formatterFn } from '../services/posts/schema';
+import { normalizer } from '../services/posts/schema';
 
 // Document reference to the posts - post: collection - doc: 00HjLZBHOA7QgfmtbyTe
 const postRef = firestore().collection('posts').doc('00HjLZBHOA7QgfmtbyTe');
@@ -560,7 +560,7 @@ function PostComponent() {
 
   const { data } = useGetDoc(postRef, {
     autoRequest: true,
-    formatterFn
+    normalizer
   });
 
   const [isLiked, setIsLiked] = useState(data.isLiked);
@@ -592,7 +592,7 @@ function PostComponent() {
 
 import store from '../../store';
 
-export function formatterFn(data) {
+export function normalizer(data) {
   const likedPosts = store.getState().userReducer.likedPosts || [];
 
   return {
@@ -608,7 +608,7 @@ export function formatterFn(data) {
 }
 ```
 
-### Formatting collections
+### Normalizing collection
 
 In the same way that we can format specific documents, we can format using **useGetDocs** to be able to specify how we want to treat the documents in our collection front, however instead of RNFirebaseTools returning us a document, it returns us an array of them, see below:
 
@@ -631,7 +631,7 @@ function PostList() {
 
   const { data, loading } = useGetDocs(postRef, {
     autoRequest: true,
-    formatterFn: (data) => {
+    normalizer: (data) => {
 
       const posts = data.map(post => {
         const isLiked = likedPosts.find(post => post.id === data.id);
@@ -663,7 +663,7 @@ function PostList() {
 
 ```
 
-As I said above it is always good to move our formatters to another file using the folder structure: `services/{entity}/schema.ts` _(Just a tip)_.
+As I said above it is always good to move our normalizers to another file using the folder structure: `services/{entity}/schema.ts` _(Just a tip)_.
 
 ## Typescript
 
@@ -708,13 +708,13 @@ export default function ViewPost({params}) {
 
 Now React Native Firebase Tools already know that the data is that format or type. Remembering how I had it above, you don't need to specify the **ID** in the type, because it's already added by default.
 
-### Formatters with types
+### Normalizer with types
 
-We can type formatter in two incredible ways with React Native Firebase Tools.
+We can type normalizer in two incredible ways with React Native Firebase Tools.
 They are:
 
-1. 📦 Creating a type like we created above for the data that comes from the documents, like `PostType`, then we can have how the date is when access from Formatter function.
-2. 💡 Create another type so we can take it from the form that the formatter will give us at the end and use the data. This is amazing!
+1. 📦 Creating a type like we created above for the data that comes from the documents, like `PostType`, then we can have how the date is when access from Normalizer function.
+2. 💡 Create another type so we can take it from the form that the normalizer will give us at the end and use the data. This is amazing!
 
 So we can do like that:
 
@@ -735,7 +735,7 @@ interface PostType {
   profileURL: string;
 }
 
-interface PostFormatterType extends PostType {
+interface PostNormalizedType extends PostType {
   isLiked: boolean;
 }
 
@@ -746,9 +746,9 @@ export default function ViewPost({ params }) {
   // Assuming we have all the post ids inside a reducer with Redux.
   const likedPosts = useStore(store => store.userReducer.likedPosts || []);
 
-  const { data } = useGetDoc<PostType, PostFormatterType>(postRef, {
+  const { data } = useGetDoc<PostType, PostNormalizedType>(postRef, {
     autoRequest: true,
-    formatterFn: (rawData) => {
+    normalizer: (rawData) => {
 
       const isLiked = likedPosts.find(post => post.id === rawData.id);
 
@@ -766,9 +766,9 @@ export default function ViewPost({ params }) {
 
 ```
 
-Here we can assume that in the end, the data corresponds to the type `PostFormatterType` and the rawData which would be the form in which the document came from the bank would be its original format which corresponds to the `PostType`.
+Here we can assume that in the end, the data corresponds to the type `PostNormalizedType` and the rawData which would be the form in which the document came from the bank would be its original format which corresponds to the `PostType`.
 
-> Remembering how I had it above, you don't need to specify the document **ID** in the type, because it's already added by default, even if you are using formatter.
+> Remembering how I had it above, you don't need to specify the document **ID** in the type, because it's already added by default, even if you are using normalizer.
 
 <img width="100%" src="https://imgur.com/RgqRyiF.png"><br/>
 
@@ -778,16 +778,16 @@ Here we can assume that in the end, the data corresponds to the type `PostFormat
 import firestore from '@react-native-firebase/firestore';
 import { useGetDoc } from 'react-native-firebase-tools';
 
-import { formatterFn } from '../services/posts/schema';
-import type { PostType, PostFormatterType } from '../services/posts/types'
+import { normalizer } from '../services/posts/schema';
+import type { PostType, PostNormalizedType } from '../services/posts/types'
 
 export default function ViewPost({ params }) {
 
   const specificPost = firestore().collection('posts').doc(params.postId);
 
-  const { data } = useGetDoc<PostType, PostFormatterType>(postRef, {
+  const { data } = useGetDoc<PostType, PostNormalizedType>(postRef, {
     autoRequest: true,
-    formatterFn
+    normalizer
   });
 
   ...
@@ -795,7 +795,7 @@ export default function ViewPost({ params }) {
 ...
 ```
 
-### Formatters with collection types
+### Normalizer with collection types
 
 There is nothing different than above, however using **useGetDocs** to get documents from a collection, you do not need to determine a typing like an array, like a group of objects.
 
@@ -805,12 +805,12 @@ RNFirebase Tools already knows that it is an array that comes from the **useGetD
 
 ```ts
 ...
-  import type { PostType, PostFormatterType } from '../services/posts/types'
+  import type { PostType, PostNormalizedType } from '../services/posts/types'
 
   const postsRef = firestore().collection('posts').limit(12);
 
   export default function PostList() {
-    const { data } = useGetDocs<PostType[], PostFormatterType[]>(postsRef, {
+    const { data } = useGetDocs<PostType[], PostNormalizedType[]>(postsRef, {
       pagination: {
         documentGrouping: true,
       }
@@ -828,7 +828,7 @@ RNFirebase Tools already knows that it is an array that comes from the **useGetD
   const postsRef = firestore().collection('posts').limit(12);
 
   export default function PostList() {
-    const { data } = useGetDocs<PostType, PostFormatterType>(postsRef, {
+    const { data } = useGetDocs<PostType, PostNormalizedType>(postsRef, {
       pagination: {
         documentGrouping: true,
       }
@@ -878,14 +878,14 @@ Then you can use assigning to a variable or not:
 import firestore from '@react-native-firebase/firestore';
 import { useGetDoc } from 'react-native-firebase-tools';
 
-import { formatterFn } from '../services/posts/schema';
-import type { PostType, PostFormatterType } from '../services/posts/types'
+import { normalizer } from '../services/posts/schema';
+import type { PostType, PostNormalizedType } from '../services/posts/types'
 
 export default function ViewPost({  params}) {
 
-  const { data } = useGetDoc<PostType, PostFormatterType>(firestore().collection('posts').doc(params.postId), {
+  const { data } = useGetDoc<PostType, PostNormalizedType>(firestore().collection('posts').doc(params.postId), {
     autoRequest: true,
-    formatterFn
+    normalizer
   });
 
   ...
@@ -905,16 +905,16 @@ Below, in addition to **assigning** the reference to a variable, we are taking a
 import firestore from '@react-native-firebase/firestore';
 import { useGetDoc } from 'react-native-firebase-tools';
 
-import { formatterFn } from '../services/posts/schema';
-import type { PostType, PostFormatterType } from '../services/posts/types'
+import { normalizer } from '../services/posts/schema';
+import type { PostType, PostNormalizedType } from '../services/posts/types'
 
 export default function ViewPost({ params }) {
 
   const specificPostRef = firestore().collection('posts').doc(params.postId);
 
-  const { data } = useGetDoc<PostType, PostFormatterType>(specificPostRef, {
+  const { data } = useGetDoc<PostType, PostNormalizedType>(specificPostRef, {
     autoRequest: true,
-    formatterFn
+    normalizer
   });
 
   ...
@@ -929,16 +929,16 @@ import { useMemo } from 'react'
 import firestore from '@react-native-firebase/firestore';
 import { useGetDoc } from 'react-native-firebase-tools';
 
-import { formatterFn } from '../services/posts/schema';
-import type { PostType, PostFormatterType } from '../services/posts/types'
+import { normalizer } from '../services/posts/schema';
+import type { PostType, PostNormalizedType } from '../services/posts/types'
 
 export default function ViewPost({ params }) {
 
   const specificPostRef = useMemo(() => firestore().collection('posts').doc(params.postId), [params.postId]);
 
-  const { data } = useGetDoc<PostType, PostFormatterType>(specificPostRef, {
+  const { data } = useGetDoc<PostType, PostNormalizedType>(specificPostRef, {
     autoRequest: true,
-    formatterFn
+    normalizer
   });
 
   ...
