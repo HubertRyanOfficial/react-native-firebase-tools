@@ -45,7 +45,7 @@ Now with **React Native Firebase Tools**, we can use the **firestore module** to
 
 ### Storage
 
-- **useUpload:** Upload files with data such as upload progress value ​​already included, automatic download URL generation and more. **(✳️ IN_PROGRESS)**
+- **useUpload:** Upload files with data such as upload progress value ​​already included, automatic download URL generation and more. **(✳️ SOON)**
 
 ## Installation
 
